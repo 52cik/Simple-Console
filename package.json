@@ -1,0 +1,12 @@
+{
+  "name": "Simple Console Js",
+  "file": "Simple-Console",
+  "version": "0.3.1",
+  "description": "用于博客,论坛,IE6-7调试信息输出的简易控制台",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-uglify": "~0.2.1",
+    "grunt-text-replace": "~0.3.12"
+  }
+}

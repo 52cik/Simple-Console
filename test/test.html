@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>js helper</title>
+</head>
+<body>
+    <script type="text/javascript" src="Simple-Console.min.js?rep"></script>
+    <script type="text/javascript">
+        alert("alert 测试");
+        console.log("console.log 测试", window.sss);
+		console.log("console.log", "测试", 123, /regexp/g, !0);
+        console.dir("console.dir 测试");
+        console.dir([1,2,3,4,{a:123}]);
+        console.dir({"a":"sss",b:123,c:{a:123,b:"ss",k:[1,22,3],x:{a:111,str:"2341",arr:[1,2,3,4,"hehe",{a:1}],ss:"ss",dd:"dd"}}});
+        setTimeout(function(){
+            console.dir({str:"hehe...", number:1234, arr:[11, "22", {innerStr:"inner", innerarr:[11,22,33]}, /regexp/, true], date:new Date()});
+        },2000);
+		
+		var str="ab<";
+		var reg=/ab(\b)/;
+		console.log(str.match(reg));
+		
+		console.log(null, undefined);
+		
+		var str="888antzone";
+		var reg=/(\d)+ant(.)one/;
+		str.match(reg);
+		console.log(RegExp.$1);
+		console.log(RegExp.$2);
+		
+		(function(){
+			console.log("arguments", arguments);
+		})(1, "2", /3/);
+		
+		function func(){
+			var a=2;
+			var b=3;
+			done()
+		}
+		function done(){}
+		console.log(done.caller);
+    </script>
+</body>
+</html>
