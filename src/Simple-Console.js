@@ -1,12 +1,12 @@
 /**
- * Simple Console Js v0.3.1
+ * Simple Console Js v0.3.2
  * 用于博客,论坛,IE6-7调试信息输出的简易控制台
  *
  * http://www.cnblogs.com/52cik/
  *
  * Released under the MIT license
  *
- * Date: 2014-06-28
+ * Date: 2014-07-08
  */
 (function(window, document, undefined) {
     
@@ -44,7 +44,7 @@
         "html{_background-image:url(about:blank);_background-attachment:fixed}"+
         "#jsconsole{font:14px/1.5 'Comic Sans MS';padding:0;width:90%;height:230px;position:fixed;bottom:17px;_position:absolute;_top:expression(documentElement.scrollTop+documentElement.clientHeight-this.offsetHeight-17+'px');left:50%;margin-left:-45%;border:1px solid #BBB;border-radius:5px;overflow:hidden;box-shadow:0px 0px 12px #CCC;background-color:#FFF;display:none;z-index:20130914}" +
         "#jsconsole .title{position:relative;height:16px;line-height:14px;padding:8px 10px;background-color:#EEE;border-bottom:1px solid #DDD}" +
-        "#js_close{display:inline-block;color:#666;font-size:14px;font-family:Tahoma;text-decoration:none;height:13px;width:13px;line-height:12px;text-align:center;position:absolute;right:11px;top:9px;border:1px solid #AAA;border-radius:3px}" +
+        "#js_close{display:inline-block;color:#666;font:13px/12px Tahoma;text-decoration:none;height:13px;width:13px;text-align:center;position:absolute;right:11px;top:9px;border:1px solid #AAA;border-radius:3px}" +
         "#js_contents{height:180px;padding:8px 12px;color:#666;overflow-y:auto}" +
         "#js_contents .item{font-size:12px;padding:0;border-bottom:1px solid #F0F0F0;margin-bottom:2px;word-break:break-all}" +
         "#js_contents .item .msg{font-family:'Microsoft YaHei',SimSun,sans-serif}";
@@ -302,7 +302,7 @@
         scriptNode.type = "text/javascript";
         scriptNode.charset = document.charset || document.characterSet || "";
         
-        var strTry = 'try{@\n}catch(e){console.error(e.name+": "+e.message)}'; // 捕捉运行时错误
+        var strTry = ['try{', '\n}catch(e){console.error(e.name+": "+e.message)}']; // 捕捉运行时错误
             
         return function (code, istry, charset) {
             var node = scriptNode.cloneNode(); // 克隆一个副本
@@ -312,7 +312,7 @@
                 window.alert = _alert; // 替换原生方法
                 window.console = _console;
             }
-            node.text = istry ? code : strTry.replace('@', code); // 写入执行代码
+            node.text = istry ? code : strTry.join(code); // 写入执行代码
             
             appendChild(head, node); // 添加到head，并运行js
             head.removeChild(node); // 移除节点
