@@ -1,12 +1,11 @@
 /**
- * Simple Console Js v0.3.2
+ * Simple Console Js v0.3.3
  * 用于博客,论坛,IE6-7调试信息输出的简易控制台
  *
  * http://www.cnblogs.com/52cik/
  *
  * Released under the MIT license
- *
- * Date: 2014-07-08
+ * Date: 2014-07-09
  */
 (function(window, document, undefined) {
     
@@ -18,15 +17,17 @@
     function createElement(tag) {
         return document.createElement(tag);
     }
-    
-    // var _appendChild = document.appendChild;
+
+    /**
+     * 添加子节点
+     * @param  {Element} parent 父节点
+     * @param  {Element} child  子节点
+     */
     function appendChild(parent, child) {
-        // _appendChild.call(parent, child);
         parent.appendChild(child);
     }
     
     var _jsconsole = createElement("div"); // 创建 js 输出 div
-    // document.body.appendChild(_jsconsole); // 添加到 body
     appendChild(document.body, _jsconsole); // 添加到 body
     _jsconsole.id = "jsconsole"; // 设置 id
     
@@ -89,7 +90,7 @@
         
         allow = (allow || "Boolean Number String Function Array Date RegExp Object").split(" ");
         
-        for (var i=0,l=allow.length; i<l; i++) {
+        for (var i=0, l=allow.length; i<l; i++) {
             _types["[object " + allow[i].charAt(0).toUpperCase() + allow[i].substr(1) + "]"] = allow[i].toLowerCase();
         }
         
@@ -106,6 +107,16 @@
         return _types[ _type ] || def || "object"; // 如果 不在允许类型内，则返回 def，def 未定义则返回 "object"
     }
 
+
+    var _color = { // 渲染用的颜色
+              "bracket": "#881280", // 括号
+               "number": "#ff0000", // 数字
+               "string": "#808080", // 字符串
+               "regexp": "#8000FF", // 正则
+              "boolean": "#000080", // 布尔
+            "attribute": "#0070A5"  // 属性
+        },
+        _tpl = ['<span style="', '', '">', '', '</span>']; // 渲染生成的字符串
     /**
      * 根据类型简单高亮处理
      * @param {mixed}  obj 任意数据
@@ -113,16 +124,6 @@
      * @return {String} 返回渲染后的 html
      */
     function render(obj, oType) {
-        var _color = {
-                  "bracket": "#881280", // 括号
-                   "number": "#ff0000", // 数字
-                   "string": "#808080", // 字符串
-                   "regexp": "#8000FF", // 正则
-                  "boolean": "#000080", // 布尔
-                "attribute": "#0070A5"  // 属性
-            },
-            _tpl = '<span style="color:@color">@val</span>';
-            
         if (obj === undefined) { // 特殊处理 undefined 与 null
             obj = "undefined";
             oType = "attribute";
@@ -142,7 +143,7 @@
             var out = createElement("div"),
                 arr = obj.split("\n");
             
-            for(var i=0,l=arr.length; i<l; i++) {
+            for(var i=0, l=arr.length; i<l; i++) {
                 i && appendChild(out, createElement("br"));
                 appendChild(out, document.createTextNode(arr[i]));
             }
@@ -150,8 +151,8 @@
             obj = '"' + out.innerHTML + '"';
             out = null;
         }
-        
-        return _color[oType] ? _tpl.replace("@color", _color[oType]).replace("@val", obj) : obj;
+
+        return _color[oType] ? '<span style="' + _color[oType] + '">' + obj + '</span>' : obj;
     }
     
     /**
@@ -203,7 +204,7 @@
                  * 当对象值类型是 object 时，相当于调用 this.object(obj[k], deep+1)
                  * 把返回数据累加到 _ret
                  **/
-                _ret += _indentex + render(k, "attribute") + ": " + (_type == "object" ? "<br>" : "") + this[ _type ]( obj[k], deep+1 ) + "<br>";
+                _ret += _indentex + render(k, "attribute") + ": " + (_type === "object" ? "<br>" : "") + this[ _type ]( obj[k], deep+1 ) + "<br>";
             }
             _ret += _indent + render("}", "bracket"); // 拼接上末尾的 } 字符串 (简单的处理了下高亮)
             return _ret; // 返回当前层处理的数据
@@ -226,9 +227,9 @@
                  **/
                  
                  if (isNaN(i)) {
-                    _ret += _sp + render(i, "attribute") + ": " + (_type == "object" ? "<br>" : "") + this[ _type ]( obj[i], deep+1 );
+                    _ret += _sp + render(i, "attribute") + ": " + (_type === "object" ? "<br>" : "") + this[ _type ]( obj[i], deep+1 );
                  } else {
-                    _ret += _sp + (_type == "object" ? "<br>" : "") + this[ _type ]( obj[i], deep+1 );
+                    _ret += _sp + (_type === "object" ? "<br>" : "") + this[ _type ]( obj[i], deep+1 );
                  }
                 _sp = ", "; // 下次循环， 分隔符就是 逗号 了、
             }
@@ -243,9 +244,9 @@
     var _console = { // 覆盖 console 功能
         log: function() { // 控制台 log 方法 (最简单，所有参数都直接输出, 无法显示复杂类型数据)
             var _ret = [], _type, _args = arguments;
-            for (var i=0,l=_args.length; i<l; i++) {
+            for (var i=0, l=_args.length; i<l; i++) {
                 _type = _key(_args[i]);
-                if (_type == "arguments" || _type == "object" && _args[i].callee) { // Arguments 对象特殊处理
+                if (_type === "arguments" || _type === "object" && _args[i].callee) { // Arguments 对象特殊处理
                     _type = "array";
                 }
                 _ret.push( jshelper[ _type ]( _args[i] ) );
@@ -327,6 +328,11 @@
 })(window, document);
 
 /**
+ * v0.3.3
+ * 修复替换导致的 $$ $' $` $& 丢失问题
+ */
+
+/**
  * 2014-06-28
  * 更新了劫持模式，默认不劫持
  * 加参数 ?rep 的时候才劫持。
@@ -337,8 +343,6 @@
  * 
  * 最后感谢落叶的蚂蚁论坛为本插件进行了一年多，全方面测试，修复了大量BUG，目前运行稳定。。
  */
-
- 
  
 /**
  * 2013-09-20
