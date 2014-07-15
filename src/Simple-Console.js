@@ -1,11 +1,11 @@
 /**
- * Simple Console Js v0.3.3
+ * Simple Console Js v0.3.4
  * 用于博客,论坛,IE6-7调试信息输出的简易控制台
  *
  * http://www.cnblogs.com/52cik/
  *
  * Released under the MIT license
- * Date: 2014-07-09
+ * Date: 2014-07-15
  */
 (function(window, document, undefined) {
     
@@ -320,14 +320,19 @@
             node = null; // 释放dom
             
             if (!isRep) {
-                window.alert = _bak_alert; // 回复原生方法
-                window.console = _bak_console;
+                setTimeout(function () { // 修复运行时替换 console.time 导致的 BUG
+                    window.alert = _bak_alert; // 回复原生方法
+                    window.console = _bak_console;
+                }, 99);
             }
         }
     })();
 })(window, document);
 
 /**
+ * v0.3.4 - 2014-07-15 22:54:57
+ * 修复运行时替换 console.time 导致的 BUG
+ *
  * v0.3.3
  * 修复替换导致的 $$ $' $` $& 丢失问题
  */
