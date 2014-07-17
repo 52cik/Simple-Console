@@ -14,7 +14,7 @@
         console.dir([1,2,3,4,{a:123}]);
         console.dir({"a":"sss",b:123,c:{a:123,b:"ss",k:[1,22,3],x:{a:111,str:"2341",arr:[1,2,3,4,"hehe",{a:1}],ss:"ss",dd:"dd"}}});
         setTimeout(function(){
-            console.dir({str:"hehe...", number:1234, arr:[11, "22", {innerStr:"inner", innerarr:[11,22,33]}, /regexp/, true], date:new Date()});
+            console.dir({str:"hehe...", number:1234, arr:[11, "22", {innerStr:"inner", innerArr:[11,22,33]}, /regexp/, true], date:new Date()});
         },2000);
 		
 		var str="ab<";
@@ -38,8 +38,11 @@
 			var b=3;
 			done()
 		}
-		function done(){}
+		function done(){
+			console.log("hehe");
+		}
 		console.log(done.caller);
+		console.log(done);
     </script>
 </body>
 </html>

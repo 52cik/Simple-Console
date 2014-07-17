@@ -1,11 +1,9 @@
 /**
- * Simple Console Js v0.3.4
+ * Simple Console Js
  * 用于博客,论坛,IE6-7调试信息输出的简易控制台
  *
  * http://www.cnblogs.com/52cik/
- *
  * Released under the MIT license
- * Date: 2014-07-15
  */
 (function(window, document, undefined) {
     
@@ -38,13 +36,14 @@
             '<a href="###" id="js_close">&#215;</a>' +
         '</div>' +
         '<div id="js_contents"></div>';
-
+// font: 14px/1.5 'Comic Sans MS', Consolas,Lucida Console,monospace;
     var head = document.getElementsByTagName('head')[0] || document.documentElement, // 取 head 元素
         style = createElement('style'), // 创建 styel 元素
         cssText = // 控制台部分 css
         "html{_background-image:url(about:blank);_background-attachment:fixed}"+
         "#jsconsole{font:14px/1.5 'Comic Sans MS';padding:0;width:90%;height:230px;position:fixed;bottom:17px;_position:absolute;_top:expression(documentElement.scrollTop+documentElement.clientHeight-this.offsetHeight-17+'px');left:50%;margin-left:-45%;border:1px solid #BBB;border-radius:5px;overflow:hidden;box-shadow:0px 0px 12px #CCC;background-color:#FFF;display:none;z-index:20130914}" +
         "#jsconsole .title{position:relative;height:16px;line-height:14px;padding:8px 10px;background-color:#EEE;border-bottom:1px solid #DDD}" +
+        "#jsconsole pre{font:14px/1.5 'Comic Sans MS';display:inline}"+
         "#js_close{display:inline-block;color:#666;font:13px/12px Tahoma;text-decoration:none;height:13px;width:13px;text-align:center;position:absolute;right:11px;top:9px;border:1px solid #AAA;border-radius:3px}" +
         "#js_contents{height:180px;padding:8px 12px;color:#666;overflow-y:auto}" +
         "#js_contents .item{font-size:12px;padding:0;border-bottom:1px solid #F0F0F0;margin-bottom:2px;word-break:break-all}" +
@@ -107,7 +106,6 @@
         return _types[ _type ] || def || "object"; // 如果 不在允许类型内，则返回 def，def 未定义则返回 "object"
     }
 
-
     var _color = { // 渲染用的颜色
               "bracket": "#881280", // 括号
                "number": "#ff0000", // 数字
@@ -124,6 +122,8 @@
      * @return {String} 返回渲染后的 html
      */
     function render(obj, oType) {
+        var string = "string";
+        
         if (obj === undefined) { // 特殊处理 undefined 与 null
             obj = "undefined";
             oType = "attribute";
@@ -131,15 +131,18 @@
             obj = "null";
             oType = "attribute";
         } else if (obj === "") {
-            oType = "string";
+            oType = string;
         } else if ( !oType ) {
             oType = type(obj);
-            if ( oType === "string" && "{}[]()".indexOf(obj) > -1) {
+            if ( oType === string && "{}[]()".indexOf(obj) > -1) {
                 oType = "bracket";
+            } else if (_color[oType] === undefined) { // 如果没有颜色渲染的，都当作字符串渲染。
+                obj = (obj || '').toString();
+                oType = string;
             }
         }
         
-        if (oType === "string") {
+        /*if (oType === string) {
             var out = createElement("div"),
                 arr = obj.split("\n");
             
@@ -150,9 +153,12 @@
             
             obj = '"' + out.innerHTML + '"';
             out = null;
+        }*/
+        if (oType === string) { // 通过 pre 渲染字符串 2014-07-17 14:27:34
+            obj = '<pre>"' + obj + '"</pre>';
         }
 
-        return _color[oType] ? '<span style="' + _color[oType] + '">' + obj + '</span>' : obj;
+        return _color[oType] ? '<span style="color:' + _color[oType] + '">' + obj + '</span>' : obj;
     }
     
     /**
@@ -174,12 +180,12 @@
         appendChild(_contents, _item.cloneNode(true)); // 克隆一份 item，添加到控制台
         _contents.scrollTop = _contents.scrollHeight; // 出现滚动条则跳到末尾
     }
-    
+
     // window.alert = function (msg) { // 修改 alert 输出
     var _alert = function (msg) {
         _log("alert: ", render(msg));
     };
-    
+
     var _space = " &nbsp; &nbsp; &nbsp; ", //缩进控制
         _key = function (o) { // 取执行用的 key 方法
             return type(o, "object array arguments", "nop"); // 只允许 object array 类型，否则返回 nop
@@ -234,7 +240,7 @@
                 _sp = ", "; // 下次循环， 分隔符就是 逗号 了、
             }
 
-            return _ret + '<span style="color:#881280">]</span>'; //返回末尾的 ] 字符串 (简单的处理了下高亮)
+            return _ret + render("]", "bracket"); //返回末尾的 ] 字符串 (简单的处理了下高亮)
         },
         nop: function (obj) { // 其他类型都直接输出
             return render(obj);
@@ -330,9 +336,12 @@
 })(window, document);
 
 /**
+ * v0.3.5 - 2014-07-17 15:05:21
+ * 修复 v0.3.2 大幅度调整时留下的 BUG，以及优化渲染部分。
+ * 
  * v0.3.4 - 2014-07-15 22:54:57
  * 修复运行时替换 console.time 导致的 BUG
- *
+ * 
  * v0.3.3
  * 修复替换导致的 $$ $' $` $& 丢失问题
  */
